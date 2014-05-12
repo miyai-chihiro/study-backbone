@@ -28,6 +28,18 @@
 		// 完了しているTodoを返す
 		done: function(){
 			return this.where({done: true});
+		},
+
+		swap: function(idA, idB){
+			var tmp, modelA, modelB;
+			modelA = this.get(idA);
+			modelB = this.get(idB);
+			if(modelA && modelB){
+				tmp = modelA.get('order');
+				modelA.save('order',modelB.get('order'),{silent: true});
+				modelB.save('order',tmp, {silent: true});
+				this.sort();
+			}
 		}
 	});
 
@@ -36,7 +48,7 @@
 	});
 
 	var TodoView = Backbone.View.extend({
-		
+
 		tagName: 'li',
 
 		events: {
@@ -56,7 +68,7 @@
 		template: function(data){
 			return template('#item-template')(data);
 		},
- 
+
 		initialize: function(){
 			this.listenTo(this.model,'change',this.render);
 			this.listenTo(this.model,'destroy',this.remove);
@@ -121,7 +133,7 @@
 			if(!this.moving) {
 				var id, model, tmp;
 				id = e.originalEvent.dataTransfer.getData('application/x-todo-id');
-				//this.model.collection.swap(id, this.model.id);
+				this.model.collection.swap(id, this.model.id);
 			}
 		},
 
@@ -196,7 +208,7 @@
 			this.collection.create({title: value});
 			this.input.val("");
 		},
-		
+
 		clearCompleted: function(e){
 			_.invoke(this.collection.done(), 'destroy');
 			return false;
