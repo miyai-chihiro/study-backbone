@@ -47,7 +47,10 @@
 			'blur .edit': 'close',
 
 			//ドラッグ・アンド・ドロップで並び替えられるようにする
-			'dragstart': 'onDragStart'
+			'dragstart': 'onDragStart',
+			'dragend': 'onDragEnd',
+			'drop': 'onDrop',
+			'dragover': 'onDragOver'
 		},
 
 		template: function(data){
@@ -109,8 +112,27 @@
 		onDragStart: function(e){
 			this.moving = true;
 			this.$el.addClass('moving');
-			console.log(e);
 			e.originalEvent.dataTransfer.setData('application/x-todo-id', this.model.id);
+		},
+
+		onDrop: function(e) {
+			e.preventDefault();
+			//自分自身へドロップした場合は何もしない
+			if(!this.moving) {
+				var id, model, tmp;
+				id = e.originalEvent.dataTransfer.getData('application/x-todo-id');
+				//this.model.collection.swap(id, this.model.id);
+			}
+		},
+
+		onDragEnd: function(){
+			this.moving = false;
+			this.$el.removeClass('moving');
+		},
+
+		onDragOver: function(e){
+			//ドロップ可能にする
+			e.preventDefault();
 		}
 	});
 
